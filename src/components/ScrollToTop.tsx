@@ -22,7 +22,7 @@ export function ScrollToTop() {
             window.removeEventListener("scroll", toggleVisibility);
             if (throttleTimer) clearTimeout(throttleTimer);
         }
-    });
+    }, []);
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
