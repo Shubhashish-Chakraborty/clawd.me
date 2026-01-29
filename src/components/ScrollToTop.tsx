@@ -5,19 +5,24 @@ import { useEffect, useState } from "react";
 export function ScrollToTop() {
     const [isVisible, setIsVisible] = useState(false);
     useEffect(() => {
+        let throttleTimer: NodeJS.Timeout | null = null;
         const toggleVisibility = () => {
-            if (window.scrollY > 400) {
-                setIsVisible(true);
-            } else {
-                setIsVisible(false);
-            }
+            if (throttleTimer) return;
+            throttleTimer = setTimeout(() => {
+                if (window.scrollY > 400) {
+                    setIsVisible(true);
+                } else {
+                    setIsVisible(false);
+                }
+                throttleTimer = null;
+            }, 100);
         };
         window.addEventListener("scroll", toggleVisibility);
-
         return () => {
             window.removeEventListener("scroll", toggleVisibility);
-        };
-    }, []);
+            if (throttleTimer) clearTimeout(throttleTimer);
+        }
+    });
     const scrollToTop = () => {
         window.scrollTo({
             top: 0,
@@ -27,7 +32,7 @@ export function ScrollToTop() {
     return (
         <button
             onClick={scrollToTop}
-            className={`fixed bottom-8 right-8 z-50 p-4 rounded-full bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 shadow-lg transition-all duration-300 hover:border-orange-500/30 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:scale-110 group ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+            className={`fixed bottom-8 right-8 z-50 p-4 cursor-pointer rounded-full bg-zinc-900/80 backdrop-blur-md border border-zinc-800/50 shadow-lg transition-all duration-300 hover:border-orange-500/30 hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:scale-110 group ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
                 }`}
             aria-label="Scroll to top"
         >
